@@ -15,10 +15,12 @@ class ChatCore
     @url = "#{@host}/api/generate"
   end
 
-  def call(prompt)
+  def call(prompt, history: [])
+    full_prompt = build_prompt_with_history(prompt, history)
+
     request_body = {
       model: @model,
-      prompt: prompt,
+      prompt: full_prompt,
       stream: false
     }
 
@@ -35,6 +37,18 @@ class ChatCore
     "Erro: #{e.response.code} - #{e.response.body}"
   rescue StandardError => e
     "Erro na conexão: #{e.message}"
+  end
+
+  private
+
+  def build_prompt_with_history(current_prompt, history)
+    return current_prompt if history.empty?
+
+    context = history.map do |msg|
+      "#{msg[:role]}: #{msg[:content]}"
+    end.join("\n")
+
+    "#{context}\nuser: #{current_prompt}\nassistant:"
   end
 
   attr_reader :model, :host, :url

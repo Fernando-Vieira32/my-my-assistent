@@ -3,14 +3,16 @@
 require_relative 'chat_core'
 
 class Main
+
+
   def self.call(...) = new(...).call
 
   def initialize(model: 'qwen2.5:7b', host: 'http://localhost:11434')
     @chat_core = ChatCore.new(model: model, host: host)
+    @history = []
   end
 
   def call
-    puts "=== Chat com Ollama (#{@chat_core.model}) ==="
     puts "Digite 'sair' ou 'exit' para encerrar\n\n"
 
     loop do
@@ -21,13 +23,24 @@ class Main
 
       next if input.strip.empty?
 
-      print 'IA: '
-      response = @chat_core.call(input)
+      print 'my-assistent: '
+      response = chat_core.call(input, history: )
       puts response
       puts "\n"
+
+      add_to_history('user', input)
+      add_to_history('assistant', response)
     end
 
     puts 'Até logo!'
+  end
+
+  attr_reader :chat_core, :history
+
+  private
+
+  def add_to_history(role, content)
+    @history << { role: role, content: content }
   end
 end
 

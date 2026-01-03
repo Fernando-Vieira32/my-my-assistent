@@ -1,0 +1,23 @@
+AllCops:
+  TargetRubyVersion: 3.3.4
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - 'spec/spec_helper.rb'
+
+Style/Documentation:
+  Enabled: false
+
+Style/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
+
+Metrics/MethodLength:
+  Max: 7
+  CountAsOne: ['array', 'hash']
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Layout/LineLength:
+  Max: 80

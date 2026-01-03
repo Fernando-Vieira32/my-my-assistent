@@ -32,9 +32,9 @@ class ChatCore
     "Erro na conexão: #{e.message}"
   end
 
-  private
-
   attr_reader :model, :host, :url
+
+  private
 
   def request_body(full_prompt)
     {

@@ -5,3 +5,5 @@ source 'https://rubygems.org'
 #using ruby3.3.4
 gem 'rest-client'
 gem 'rubocop'
+gem 'rspec'
+gem 'webmock'

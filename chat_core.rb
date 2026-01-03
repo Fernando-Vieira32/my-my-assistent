@@ -39,6 +39,8 @@ class ChatCore
     "Erro na conexão: #{e.message}"
   end
 
+  attr_reader :model, :host, :url
+
   private
 
   def build_prompt_with_history(current_prompt, history)
@@ -50,6 +52,4 @@ class ChatCore
 
     "#{context}\nuser: #{current_prompt}\nassistant:"
   end
-
-  attr_reader :model, :host, :url
 end

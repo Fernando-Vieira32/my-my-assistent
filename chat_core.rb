@@ -4,7 +4,6 @@ require 'rest-client'
 require 'json'
 
 class ChatCore
-
   def self.call(prompt, model: 'qwen2.5:7b', host: 'http://localhost:11434')
     new(model: model, host: host).call(prompt)
   end
@@ -18,15 +17,9 @@ class ChatCore
   def call(prompt, history: [])
     full_prompt = build_prompt_with_history(prompt, history)
 
-    request_body = {
-      model: @model,
-      prompt: full_prompt,
-      stream: false
-    }
-
     response = RestClient.post(
-      @url,
-      request_body.to_json,
+      url,
+      request_body(full_prompt).to_json,
       content_type: :json,
       accept: :json
     )
@@ -42,6 +35,14 @@ class ChatCore
   attr_reader :model, :host, :url
 
   private
+
+  def request_body(full_prompt)
+    {
+      model:,
+      prompt: full_prompt,
+      stream: false
+    }
+  end
 
   def build_prompt_with_history(current_prompt, history)
     return current_prompt if history.empty?

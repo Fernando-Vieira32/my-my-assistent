@@ -9,11 +9,9 @@ RSpec.describe ChatCore do
   let(:chat_core) { described_class.new(model: model, host: host) }
 
   describe '#initialize' do
-    it 'sets the model, host and url' do
-      expect(chat_core.model).to eq(model)
-      expect(chat_core.host).to eq(host)
-      expect(chat_core.url).to eq("#{host}/api/generate")
-    end
+    it { expect(chat_core.model).to eq(model) }
+    it { expect(chat_core.host).to eq(host) }
+    it { expect(chat_core.url).to eq("#{host}/api/generate") }
   end
 
   describe '#call' do

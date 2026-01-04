@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'chat_core'
+require_relative 'services/precesse_response'
 
 class Main
   def self.call(...) = new(...).call
 
-  def initialize(model: 'qwen2.5:7b', host: 'http://localhost:11434')
+  def initialize(model: 'resource_manager_1.0', host: 'http://localhost:11434')
     @chat_core = ChatCore.new(model: model, host: host)
     @history = []
   end
@@ -13,7 +14,6 @@ class Main
   def call
     puts "Digite 'sair' ou 'exit' para encerrar\n\n"
     chat_loop
-    show_goodbye
     puts 'Até logo!'
   end
 
@@ -41,13 +41,18 @@ class Main
   end
 
   def process_message(input)
-    response = get_ai_response(input)
-    display_response(response)
-    save_conversation(input, response)
+    raw_response = get_ai_response(input)
+    processed_response = process_ai_response(raw_response)
+    display_response(processed_response)
+    save_conversation(input, processed_response)
   end
 
   def get_ai_response(input)
     chat_core.call(input, history:)
+  end
+
+  def process_ai_response(response)
+    Services::PrecesseResponse.call(response)
   end
 
   def display_response(response)

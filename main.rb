@@ -41,10 +41,11 @@ class Main
   end
 
   def process_message(input)
+    add_to_history('user', input)
     raw_response = get_ai_response(input)
     final_response = handle_resource_requests(raw_response)
+    add_to_history('assistant', final_response)
     display_response(final_response)
-    save_conversation(input, final_response)
   end
 
   def get_ai_response(input)
@@ -56,26 +57,19 @@ class Main
     return response unless result[:has_request]
 
     context = build_resource_context(result[:resource_data])
-    get_ai_response(context)
+    chat_core.call(context, history:)
   end
 
   def build_resource_context(resource_data)
-    resources = resource_data.map do |data|
-      "Resource: #{data[:method_call]} = #{data[:result]}"
+    resource_data.map do |data|
+      "#{data[:method_call]} = #{data[:result]}"
     end.join("\n")
-
-    "#{resources}\nUse the information above to answer the question."
   end
 
   def display_response(response)
     print 'my-assistent: '
     puts response
     puts "\n"
-  end
-
-  def save_conversation(input, response)
-    add_to_history('user', input)
-    add_to_history('assistant', response)
   end
 
   def add_to_history(role, content)

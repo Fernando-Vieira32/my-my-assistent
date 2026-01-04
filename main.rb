@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'chat_core'
-require_relative 'services/precesse_response'
+require_relative 'services/resource_request'
 
 class Main
   def self.call(...) = new(...).call
 
-  def initialize(model: 'resource_manager_1.0', host: 'http://localhost:11434')
+  def initialize(model: 'resource-manager_2.0', host: 'http://localhost:11434')
     @chat_core = ChatCore.new(model: model, host: host)
     @history = []
   end
@@ -42,17 +42,29 @@ class Main
 
   def process_message(input)
     raw_response = get_ai_response(input)
-    processed_response = process_ai_response(raw_response)
-    display_response(processed_response)
-    save_conversation(input, processed_response)
+    final_response = handle_resource_requests(raw_response)
+    display_response(final_response)
+    save_conversation(input, final_response)
   end
 
   def get_ai_response(input)
     chat_core.call(input, history:)
   end
 
-  def process_ai_response(response)
-    Services::PrecesseResponse.call(response)
+  def handle_resource_requests(response)
+    result = Services::ResourceRequest.call(response)
+    return response unless result[:has_request]
+
+    context = build_resource_context(result[:resource_data])
+    get_ai_response(context)
+  end
+
+  def build_resource_context(resource_data)
+    resources = resource_data.map do |data|
+      "Resource: #{data[:method_call]} = #{data[:result]}"
+    end.join("\n")
+
+    "#{resources}\nUse the information above to answer the question."
   end
 
   def display_response(response)
